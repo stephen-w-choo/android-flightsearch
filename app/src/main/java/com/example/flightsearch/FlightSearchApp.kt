@@ -13,5 +13,4 @@ class FlightSearchApp: Application() {
         super.onCreate()
         database = FlightSearchDatabase.getDatabase(this)
     }
-
 }

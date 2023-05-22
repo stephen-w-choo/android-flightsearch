@@ -1,6 +1,8 @@
 package com.example.flightsearch.ui
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import com.example.flightsearch.data.Favorite
 
@@ -29,18 +31,41 @@ suggestions, which the app displays conditionally while the user types.
  */
 
 @Composable
-fun FlightSearchApp(
+fun FlightSearchMainView(
+    flightSearchViewModel: FlightSearchViewModel,
     modifier: Modifier = Modifier,
 ) {
-
+    // currently using a simple if else series of statements
+    // may eventually change to a navController
+    val uiState = flightSearchViewModel.uiState.collectAsState().value
+    if (uiState.currentAirport != null) {
+        AirportFlightListScreen()
+    } else if (uiState.search != null) {
+        AirportSearchScreen()
+    } else {
+        FavouritesScreen(favorites = emptyList())
+    }
 }
 
 // 2 screens - favourites, airportSearch, airportFlightList
-
 @Composable
 fun FavouritesScreen(
     favorites: List<Favorite>,
     modifier: Modifier = Modifier,
 ) {
+    Text(text = "Favourites Screen")
+}
 
+@Composable
+fun AirportSearchScreen(
+    modifier: Modifier = Modifier,
+) {
+    Text(text = "Airport Search Screen")
+}
+
+@Composable
+fun AirportFlightListScreen(
+    modifier: Modifier = Modifier,
+) {
+    Text(text = "Airport Flight List Screen")
 }

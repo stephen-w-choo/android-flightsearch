@@ -10,7 +10,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.flightsearch.ui.FlightSearchMainView
+import com.example.flightsearch.ui.FlightSearchViewModel
 import com.example.flightsearch.ui.theme.FlightSearchTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,25 +27,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    FlightSearchMainView(
+                        flightSearchViewModel = viewModel(factory = FlightSearchViewModel.factory)
+                    )
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FlightSearchTheme {
-        Greeting("Android")
-    }
-}

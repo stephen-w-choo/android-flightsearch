@@ -1,6 +1,11 @@
 package com.example.flightsearch.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.flightsearch.FlightSearchApp
 import com.example.flightsearch.data.Airport
 import com.example.flightsearch.data.Favorite
 import com.example.flightsearch.data.FlightSearchDao
@@ -48,6 +53,15 @@ class FlightSearchViewModel(
 
     fun deleteFavorite(favorite: Favorite) {
         flightSearchDao.deleteFavorite(favorite)
+    }
+
+    companion object {
+        val factory : ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as FlightSearchApp)
+                FlightSearchViewModel(application.database.flightSearchDao())
+            }
+        }
     }
 }
 
