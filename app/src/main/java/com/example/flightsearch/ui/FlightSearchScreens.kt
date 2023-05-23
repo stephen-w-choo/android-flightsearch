@@ -1,7 +1,8 @@
 package com.example.flightsearch.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -11,7 +12,9 @@ import androidx.compose.ui.Modifier
 import com.example.flightsearch.data.Airport
 import com.example.flightsearch.data.Favorite
 // import lazy items
-import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.example.flightsearch.ui.screens.AirportSearchScreen
 
 /*
 Plan your UI
@@ -45,10 +48,6 @@ fun FlightSearchMainView(
     // currently using a simple if else series of statements
     // may eventually change to a navController
     val uiState = flightSearchViewModel.uiState.collectAsState().value
-    val airportList = flightSearchViewModel
-        .getAllAirports()
-        .collectAsState(initial = emptyList())
-        .value
 
     val searchAirportList = flightSearchViewModel
         .searchAirports(uiState.search ?: "")
@@ -59,12 +58,13 @@ fun FlightSearchMainView(
         FlightSearchBar(flightSearchViewModel = flightSearchViewModel)
 
         if (uiState.currentAirport != null) {
-            AirportFlightListScreen(
+            AirportRouteListScreen(
                 modifier = modifier
             )
         } else if (uiState.search != null) {
             AirportSearchScreen(
                 airportList = searchAirportList,
+                setCurrentAirport = flightSearchViewModel::setCurrentAirport,
                 modifier = modifier
             )
         } else {
@@ -90,6 +90,7 @@ fun FlightSearchBar(
             flightSearchViewModel.setSearchTerm(it)
         },
         label = { Text("Enter airport code or name") },
+
     )
 }
 
@@ -102,25 +103,13 @@ fun FavouritesScreen(
     Text(text = "Favourites Screen")
 }
 
-@Composable
-fun AirportSearchScreen(
-    airportList: List<Airport>,
-    modifier: Modifier = Modifier,
-) {
-    Text(text = "Airport Search Screen")
-    LazyColumn() {
-        items(airportList) { airport ->
-            AirportCard(airport = airport)
-        }
-    }
-}
+
 
 @Composable
-fun AirportCard(
-    airport: Airport,
+fun AirportRouteListScreen(
     modifier: Modifier = Modifier,
 ) {
-    Text(airport.name)
+    Text(text = "Airport Flight List Screen")
 }
 
 @Composable
@@ -131,12 +120,4 @@ fun RouteCard(
 ) {
     Text(currentAirport.name)
     Text(destinationAirport.name)
-}
-
-
-@Composable
-fun AirportFlightListScreen(
-    modifier: Modifier = Modifier,
-) {
-    Text(text = "Airport Flight List Screen")
 }
