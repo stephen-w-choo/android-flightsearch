@@ -1,5 +1,6 @@
 package com.example.flightsearch.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -21,10 +22,13 @@ class FlightSearchViewModel(
 
     fun setSearchTerm(searchTerm: String) {
         // update uiState with searchTerm string
+        // log the searchTerm string
+        Log.d("FlightSearchViewModel", "setSearchTerm: $searchTerm")
         if (searchTerm == "") {
-            _uiState.value = FlightSearchUiState()
+            _uiState.value = FlightSearchUiState(search = null)
+        } else {
+            _uiState.value = _uiState.value.copy(search = searchTerm)
         }
-        _uiState.value = _uiState.value.copy(search = searchTerm)
     }
 
     fun setCurrentAirport(airport: Airport) {

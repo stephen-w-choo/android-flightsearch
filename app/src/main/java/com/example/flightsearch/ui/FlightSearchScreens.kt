@@ -1,10 +1,17 @@
 package com.example.flightsearch.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import com.example.flightsearch.data.Airport
 import com.example.flightsearch.data.Favorite
+// import lazy items
+import androidx.compose.foundation.lazy.items
 
 /*
 Plan your UI
@@ -38,13 +45,52 @@ fun FlightSearchMainView(
     // currently using a simple if else series of statements
     // may eventually change to a navController
     val uiState = flightSearchViewModel.uiState.collectAsState().value
-    if (uiState.currentAirport != null) {
-        AirportFlightListScreen()
-    } else if (uiState.search != null) {
-        AirportSearchScreen()
-    } else {
-        FavouritesScreen(favorites = emptyList())
+    val airportList = flightSearchViewModel
+        .getAllAirports()
+        .collectAsState(initial = emptyList())
+        .value
+
+    val searchAirportList = flightSearchViewModel
+        .searchAirports(uiState.search ?: "")
+        .collectAsState(initial = emptyList())
+        .value
+
+    Column {
+        FlightSearchBar(flightSearchViewModel = flightSearchViewModel)
+
+        if (uiState.currentAirport != null) {
+            AirportFlightListScreen(
+                modifier = modifier
+            )
+        } else if (uiState.search != null) {
+            AirportSearchScreen(
+                airportList = searchAirportList,
+                modifier = modifier
+            )
+        } else {
+            FavouritesScreen(
+                favorites = emptyList(),
+                modifier = modifier
+            )
+        }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FlightSearchBar(
+    flightSearchViewModel: FlightSearchViewModel,
+    modifier: Modifier = Modifier
+) {
+    // Text input field
+    val uiState = flightSearchViewModel.uiState.collectAsState().value
+    TextField(
+        value = uiState.search ?: "",
+        onValueChange = {
+            flightSearchViewModel.setSearchTerm(it)
+        },
+        label = { Text("Enter airport code or name") },
+    )
 }
 
 // 2 screens - favourites, airportSearch, airportFlightList
@@ -58,10 +104,35 @@ fun FavouritesScreen(
 
 @Composable
 fun AirportSearchScreen(
+    airportList: List<Airport>,
     modifier: Modifier = Modifier,
 ) {
     Text(text = "Airport Search Screen")
+    LazyColumn() {
+        items(airportList) { airport ->
+            AirportCard(airport = airport)
+        }
+    }
 }
+
+@Composable
+fun AirportCard(
+    airport: Airport,
+    modifier: Modifier = Modifier,
+) {
+    Text(airport.name)
+}
+
+@Composable
+fun RouteCard(
+    currentAirport: Airport,
+    destinationAirport: Airport,
+    modifier: Modifier = Modifier,
+) {
+    Text(currentAirport.name)
+    Text(destinationAirport.name)
+}
+
 
 @Composable
 fun AirportFlightListScreen(
