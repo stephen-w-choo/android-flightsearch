@@ -1,19 +1,15 @@
 package com.example.flightsearch.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import com.example.flightsearch.data.Airport
 import com.example.flightsearch.data.Favorite
+import com.example.flightsearch.ui.screens.AirportRouteListScreen
 // import lazy items
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.example.flightsearch.ui.screens.AirportSearchScreen
 
 /*
@@ -48,6 +44,9 @@ fun FlightSearchMainView(
     // currently using a simple if else series of statements
     // may eventually change to a navController
     val uiState = flightSearchViewModel.uiState.collectAsState().value
+    val airportList = flightSearchViewModel.airportList.collectAsState().value
+
+    val favoriteList = flightSearchViewModel.getAllFavorites().collectAsState(initial= emptyList()).value
 
     val searchAirportList = flightSearchViewModel
         .searchAirports(uiState.search ?: "")
@@ -59,6 +58,11 @@ fun FlightSearchMainView(
 
         if (uiState.currentAirport != null) {
             AirportRouteListScreen(
+                currentAirport = uiState.currentAirport,
+                allAirportsList = airportList,
+                addFavorite = flightSearchViewModel::addFavorite,
+                deleteFavorite = flightSearchViewModel::deleteFavorite,
+                favoriteList = favoriteList,
                 modifier = modifier
             )
         } else if (uiState.search != null) {
@@ -104,20 +108,3 @@ fun FavouritesScreen(
 }
 
 
-
-@Composable
-fun AirportRouteListScreen(
-    modifier: Modifier = Modifier,
-) {
-    Text(text = "Airport Flight List Screen")
-}
-
-@Composable
-fun RouteCard(
-    currentAirport: Airport,
-    destinationAirport: Airport,
-    modifier: Modifier = Modifier,
-) {
-    Text(currentAirport.name)
-    Text(destinationAirport.name)
-}
