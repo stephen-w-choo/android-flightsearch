@@ -58,7 +58,7 @@ fun RouteCard(
     favoriteExists: Favorite?,
     modifier: Modifier = Modifier,
 ) {
-    // if it does, show the remove button
+    // if favoriteExists, show the remove button
     // if it doesn't, show the add button
 
     Text(originAirport.name)
