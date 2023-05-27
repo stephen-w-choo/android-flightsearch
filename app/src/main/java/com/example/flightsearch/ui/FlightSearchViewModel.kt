@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class FlightSearchViewModel(
@@ -61,12 +62,23 @@ class FlightSearchViewModel(
         return flightSearchDao.getAllFavorites()
     }
 
+    fun checkFavoriteExists(departureCode: String, destinationCode: String): Flow<Favorite?> {
+        // convert Flow<Int> to Boolean
+        return flightSearchDao.favoriteExists(departureCode, destinationCode)
+    }
+
     fun addFavorite(newFavorite: Favorite) {
-        flightSearchDao.addFavorite(newFavorite)
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d("FlightSearchViewModel", "addFavorite: $newFavorite")
+            flightSearchDao.addFavorite(newFavorite)
+        }
     }
 
     fun deleteFavorite(favorite: Favorite) {
-        flightSearchDao.deleteFavorite(favorite)
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d("FlightSearchViewModel", "deleteFavorite: $favorite")
+            flightSearchDao.deleteFavorite(favorite)
+        }
     }
 
     companion object {

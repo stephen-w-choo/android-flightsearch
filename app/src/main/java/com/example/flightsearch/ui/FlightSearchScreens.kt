@@ -1,6 +1,7 @@
 package com.example.flightsearch.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -10,6 +11,7 @@ import androidx.compose.ui.Modifier
 import com.example.flightsearch.data.Favorite
 import com.example.flightsearch.ui.screens.AirportRouteListScreen
 // import lazy items
+import androidx.compose.foundation.lazy.items
 import com.example.flightsearch.ui.screens.AirportSearchScreen
 
 /*
@@ -46,34 +48,29 @@ fun FlightSearchMainView(
     val uiState = flightSearchViewModel.uiState.collectAsState().value
     val airportList = flightSearchViewModel.airportList.collectAsState().value
 
-    val favoriteList = flightSearchViewModel.getAllFavorites().collectAsState(initial= emptyList()).value
 
-    val searchAirportList = flightSearchViewModel
-        .searchAirports(uiState.search ?: "")
-        .collectAsState(initial = emptyList())
-        .value
 
     Column {
         FlightSearchBar(flightSearchViewModel = flightSearchViewModel)
 
         if (uiState.currentAirport != null) {
             AirportRouteListScreen(
-                currentAirport = uiState.currentAirport,
-                allAirportsList = airportList,
-                addFavorite = flightSearchViewModel::addFavorite,
-                deleteFavorite = flightSearchViewModel::deleteFavorite,
-                favoriteList = favoriteList,
+                uiState = uiState,
+                airportList = airportList,
+                flightSearchViewModel = flightSearchViewModel,
                 modifier = modifier
             )
         } else if (uiState.search != null) {
             AirportSearchScreen(
-                airportList = searchAirportList,
-                setCurrentAirport = flightSearchViewModel::setCurrentAirport,
+                uiState = uiState,
+                airportList = airportList,
+                flightSearchViewModel = flightSearchViewModel,
                 modifier = modifier
             )
         } else {
             FavouritesScreen(
-                favorites = emptyList(),
+                favorites = flightSearchViewModel.getAllFavorites()
+                    .collectAsState(initial = emptyList()).value,
                 modifier = modifier
             )
         }
@@ -104,7 +101,11 @@ fun FavouritesScreen(
     favorites: List<Favorite>,
     modifier: Modifier = Modifier,
 ) {
-    Text(text = "Favourites Screen")
+    LazyColumn(content = {
+        items(favorites) { favorite ->
+            Text(text = favorite.departureCode)
+        }
+    })
 }
 
 

@@ -11,10 +11,10 @@ interface FlightSearchDao {
     @Query("SELECT * FROM favorite")
     fun getAllFavorites(): Flow<List<Favorite>>
 
-    @Query("SELECT COUNT(*) FROM favorite " +
+    @Query("SELECT * FROM favorite " +
             "WHERE departure_code = :departureCode " +
             "AND destination_code = :destinationCode")
-    fun favoriteExists(departureCode: String, destinationCode: String): Flow<Int>
+    fun favoriteExists(departureCode: String, destinationCode: String): Flow<Favorite?>
 
     @Insert
     fun addFavorite(newFavorite: Favorite)

@@ -1,5 +1,6 @@
 package com.example.flightsearch.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
@@ -8,92 +9,95 @@ import androidx.compose.ui.Modifier
 import com.example.flightsearch.data.Airport
 // import lazy items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.res.painterResource
+import com.example.flightsearch.R
 import com.example.flightsearch.data.Favorite
-import com.example.flightsearch.data.isSameAs
+import com.example.flightsearch.ui.FlightSearchUiState
+import com.example.flightsearch.ui.FlightSearchViewModel
 
 @Composable
 fun AirportRouteListScreen(
-    currentAirport: Airport,
-    addFavorite: (Favorite) -> Unit,
-    deleteFavorite: (Favorite) -> Unit,
-    favoriteList: List<Favorite>,
-    allAirportsList: List<Airport>,
+    uiState: FlightSearchUiState,
+    airportList: List<Airport>,
+    flightSearchViewModel: FlightSearchViewModel,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(content = {
-        items(allAirportsList) { airport ->
-            RouteCard(
-                currentAirport = currentAirport,
-                destinationAirport = airport,
-                addFavorite = addFavorite,
-                deleteFavorite = deleteFavorite,
-                favoriteList = favoriteList,
-                modifier = modifier
-            )
-        }
-    })
+    if (uiState.currentAirport != null) {
+        LazyColumn(content = {
+            items(airportList) { airport ->
+                // note - I'm running an N + 1 query here which is not ideal
+                // I CAN optimise it by running 2 queries instead - the first to get all the destination airports
+                // in the favourites table where the departureCode is the current airport's iataCode
+                // and then the second to get all the airports while excluding the ones whose iataCode
+                // is in the list of destination airports
+
+                // this will get complicated and unreadable fast, so I'm keeping it simple for now, albeit inefficient
+                RouteCard(
+                    originAirport = uiState.currentAirport,
+                    destinationAirport = airport,
+                    flightSearchViewModel = flightSearchViewModel,
+                    favoriteExists = flightSearchViewModel.checkFavoriteExists(
+                        uiState.currentAirport.iataCode,
+                        airport.iataCode
+                    ).collectAsState(initial = null).value,
+                    modifier = modifier
+                )
+            }
+        })
+    }
     Text(text = "Airport Flight List Screen")
 }
 
 @Composable
 fun RouteCard(
-    currentAirport: Airport,
+    originAirport: Airport,
     destinationAirport: Airport,
-    addFavorite: (Favorite) -> Unit,
-    deleteFavorite: (Favorite) -> Unit,
-    favoriteList: List<Favorite>,
+    flightSearchViewModel: FlightSearchViewModel,
+    favoriteExists: Favorite?,
     modifier: Modifier = Modifier,
 ) {
-    // create a favorite object
-    val newFavorite = Favorite(
-        departureCode = currentAirport.iataCode,
-        destinationCode = destinationAirport.iataCode
-    )
-    // check if it exists in the favorites list
-    val favoriteExists: Boolean = favoriteList.any{ it.isSameAs(newFavorite) }
-
     // if it does, show the remove button
     // if it doesn't, show the add button
 
-    Text(currentAirport.name)
+    Text(originAirport.name)
     Text(destinationAirport.name)
-    if (favoriteExists) {
-        DeleteFavoriteButton(
-            favorite = newFavorite,
-            deleteFavorite = deleteFavorite,
-            modifier = modifier
-        )
-    } else {
-        AddFavoriteButton(
-            favorite = newFavorite,
-            addFavorite = addFavorite,
-            modifier = modifier
-        )
+    FavoriteButton(
+        onClick = {
+            if (favoriteExists != null) {
+                flightSearchViewModel.deleteFavorite(favoriteExists)
+            } else {
+                // create a favorite object
+                val newFavorite = Favorite(
+                    departureCode = originAirport.iataCode,
+                    destinationCode = destinationAirport.iataCode
+                )
+                flightSearchViewModel.addFavorite(newFavorite)
+            }
+        },
+        favorited = favoriteExists != null,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun FavoriteButton(
+    onClick: () -> Unit,
+    favorited: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Button(onClick = onClick) {
+        if (favorited) {
+            Image(
+                painter = painterResource(id = R.drawable.favorite_star),
+                contentDescription = "Currently a favorite. Tap to unfavorite",
+            )
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.unfavorite_star),
+                contentDescription = "Currently not a favorite. Tap to favorite",
+            )
+        }
     }
-}
-
-@Composable
-fun AddFavoriteButton(
-    favorite: Favorite,
-    addFavorite: (Favorite) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = "Add Favorite",
-        modifier = modifier
-            .clickable { addFavorite(favorite) }
-    )
-}
-
-@Composable
-fun DeleteFavoriteButton(
-    favorite: Favorite,
-    deleteFavorite: (Favorite) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = "Delete Favorite",
-        modifier = modifier
-            .clickable { deleteFavorite(favorite) }
-    )
 }

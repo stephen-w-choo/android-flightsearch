@@ -15,15 +15,23 @@ abstract class FlightSearchDatabase: RoomDatabase() {
 
         fun getDatabase(context: Context): FlightSearchDatabase {
             return Instance ?: synchronized(this) {
-                Room.databaseBuilder(
-                    context = context,
+
+                val dbFile = context.getDatabasePath("flight_search_database")
+
+                // use the let function to check if db exists and apply appropriate builder method
+                val builder = Room.databaseBuilder(
+                    context.applicationContext,
                     FlightSearchDatabase::class.java,
-                    name = "flight_search_database"
-                )
-                    .createFromAsset("flight_search.db")
-                    .fallbackToDestructiveMigration()
-                    .build()
-                    .also {Instance = it}
+                    "flight_search_database"
+                ).let { builder ->
+                    if (dbFile.exists()) {
+                        builder.fallbackToDestructiveMigration()
+                    } else {
+                        builder.createFromAsset("flight_search.db")
+                    }
+                }
+
+                builder.build().also { Instance = it }
             }
         }
     }

@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class Favorite(
     @PrimaryKey(autoGenerate = true)
-    val id: Int? = null,
+    val id: Int = 0,
     @ColumnInfo(name = "departure_code")
     val departureCode: String,
     @ColumnInfo(name = "destination_code")
