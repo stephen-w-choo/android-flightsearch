@@ -25,6 +25,7 @@ abstract class FlightSearchDatabase: RoomDatabase() {
                     "flight_search_database"
                 ).let { builder ->
                     if (dbFile.exists()) {
+                        // TODO: Production ONLY, must be removed outside of production
                         builder.fallbackToDestructiveMigration()
                     } else {
                         builder.createFromAsset("flight_search.db")

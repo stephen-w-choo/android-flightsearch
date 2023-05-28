@@ -1,18 +1,16 @@
 package com.example.flightsearch.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import com.example.flightsearch.data.Favorite
 import com.example.flightsearch.ui.screens.AirportRouteListScreen
 // import lazy items
-import androidx.compose.foundation.lazy.items
 import com.example.flightsearch.ui.screens.AirportSearchScreen
+import com.example.flightsearch.ui.screens.FavoritesScreen
 
 /*
 Plan your UI
@@ -46,9 +44,6 @@ fun FlightSearchMainView(
     // currently using a simple if else series of statements
     // may eventually change to a navController
     val uiState = flightSearchViewModel.uiState.collectAsState().value
-    val airportList = flightSearchViewModel.airportList.collectAsState().value
-
-
 
     Column {
         FlightSearchBar(flightSearchViewModel = flightSearchViewModel)
@@ -56,21 +51,20 @@ fun FlightSearchMainView(
         if (uiState.currentAirport != null) {
             AirportRouteListScreen(
                 uiState = uiState,
-                airportList = airportList,
                 flightSearchViewModel = flightSearchViewModel,
                 modifier = modifier
             )
         } else if (uiState.search != null) {
             AirportSearchScreen(
                 uiState = uiState,
-                airportList = airportList,
                 flightSearchViewModel = flightSearchViewModel,
                 modifier = modifier
             )
         } else {
-            FavouritesScreen(
+            FavoritesScreen(
                 favorites = flightSearchViewModel.getAllFavorites()
                     .collectAsState(initial = emptyList()).value,
+                flightSearchViewModel = flightSearchViewModel,
                 modifier = modifier
             )
         }
@@ -93,19 +87,6 @@ fun FlightSearchBar(
         label = { Text("Enter airport code or name") },
 
     )
-}
-
-// 2 screens - favourites, airportSearch, airportFlightList
-@Composable
-fun FavouritesScreen(
-    favorites: List<Favorite>,
-    modifier: Modifier = Modifier,
-) {
-    LazyColumn(content = {
-        items(favorites) { favorite ->
-            Text(text = favorite.departureCode)
-        }
-    })
 }
 
 

@@ -19,7 +19,6 @@ import com.example.flightsearch.ui.FlightSearchViewModel
 @Composable
 fun AirportSearchScreen(
     uiState: FlightSearchUiState,
-    airportList: List<Airport>,
     flightSearchViewModel: FlightSearchViewModel,
     modifier: Modifier = Modifier,
 ) {

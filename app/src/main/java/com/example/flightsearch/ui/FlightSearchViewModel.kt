@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.flightsearch.FlightSearchApp
 import com.example.flightsearch.data.Airport
 import com.example.flightsearch.data.Favorite
+import com.example.flightsearch.data.FavoriteWithAirports
 import com.example.flightsearch.data.FlightSearchDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -23,19 +24,6 @@ class FlightSearchViewModel(
 ): ViewModel() {
     private val _uiState = MutableStateFlow(FlightSearchUiState())
     val uiState: StateFlow<FlightSearchUiState> = _uiState
-
-    // note - putting airportList separate to rest of the uiState as it will never change
-    // avoids having to copy the entire list of the airports when the uiState is modified
-    private val _airportList = MutableStateFlow<List<Airport>>(emptyList())
-    val airportList: StateFlow<List<Airport>> = _airportList
-
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            flightSearchDao.getAllAirports().collect { airports ->
-                _airportList.emit(airports)
-            }
-        }
-    }
 
     fun setSearchTerm(searchTerm: String) {
         Log.d("FlightSearchViewModel", "setSearchTerm: $searchTerm")
@@ -54,15 +42,19 @@ class FlightSearchViewModel(
         _uiState.value = _uiState.value.copy(currentAirport = null)
     }
 
+    fun getAllAirports(): Flow<List<Airport>> {
+        return flightSearchDao.getAllAirports()
+    }
+
     fun searchAirports(search: String): Flow<List<Airport>> {
         return flightSearchDao.searchAirports(search)
     }
 
-    fun getAllFavorites(): Flow<List<Favorite>> {
+    fun getAllFavorites(): Flow<List<FavoriteWithAirports>> {
         return flightSearchDao.getAllFavorites()
     }
 
-    fun checkFavoriteExists(departureCode: String, destinationCode: String): Flow<Favorite?> {
+    fun checkFavoriteExists(departureCode: String, destinationCode: String): Flow<FavoriteWithAirports?> {
         // convert Flow<Int> to Boolean
         return flightSearchDao.favoriteExists(departureCode, destinationCode)
     }
