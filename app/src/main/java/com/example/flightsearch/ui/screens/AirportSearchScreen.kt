@@ -29,7 +29,10 @@ fun AirportSearchScreen(
         .collectAsState(initial = emptyList())
         .value
 
-    LazyColumn() {
+    LazyColumn(
+        modifier = modifier
+            .padding(4.dp)
+    ) {
         items(searchAirportList) { airport ->
             AirportCard(
                 airport = airport,

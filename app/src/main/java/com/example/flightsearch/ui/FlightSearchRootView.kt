@@ -1,18 +1,29 @@
 package com.example.flightsearch.ui
 
-import android.util.Log
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import com.example.flightsearch.ui.screens.AirportRouteListScreen
 // import lazy items
 import com.example.flightsearch.ui.screens.AirportSearchScreen
 import com.example.flightsearch.ui.screens.AllFavoritesScreen
+import com.example.flightsearch.ui.theme.FlightSearchTheme
 
 /*
 Plan your UI
@@ -38,6 +49,7 @@ suggestions, which the app displays conditionally while the user types.
 
  */
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlightSearchRootView(
     flightSearchViewModel: FlightSearchViewModel,
@@ -47,33 +59,45 @@ fun FlightSearchRootView(
     // may eventually change to a navController
     val uiState = flightSearchViewModel.uiState.collectAsState().value
     val airportList = flightSearchViewModel.airportList.collectAsState().value
-
-    Column {
-        FlightSearchBar(
-            flightSearchViewModel = flightSearchViewModel,
-            uiState = uiState,
-        )
-
-        if (uiState.isFocused) {
-            AirportSearchScreen(
-                uiState = uiState,
-                airportList = airportList,
-                flightSearchViewModel = flightSearchViewModel,
-                modifier = modifier
-            )
-        } else if (uiState.currentAirport != null) {
-            AirportRouteListScreen(
-                uiState = uiState,
-                airportList = airportList,
-                flightSearchViewModel = flightSearchViewModel,
-                modifier = modifier
-            )
-        } else {
-            AllFavoritesScreen(
-                uiState = uiState,
-                flightSearchViewModel,
-                modifier = modifier
-            )
+    FlightSearchTheme {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Flight Search") },
+                )
+            },
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.surface)
+        ) { innerPadding ->
+            Column(
+                modifier = modifier.padding(innerPadding)
+            ) {
+                FlightSearchBar(
+                    flightSearchViewModel = flightSearchViewModel,
+                    uiState = uiState,
+                )
+                if (uiState.currentAirport != null) {
+                    AirportRouteListScreen(
+                        uiState = uiState,
+                        airportList = airportList,
+                        flightSearchViewModel = flightSearchViewModel,
+                        modifier = modifier
+                    )
+                } else if (uiState.search != null) {
+                    AirportSearchScreen(
+                        uiState = uiState,
+                        airportList = airportList,
+                        flightSearchViewModel = flightSearchViewModel,
+                        modifier = modifier
+                    )
+                } else {
+                    AllFavoritesScreen(
+                        uiState = uiState,
+                        flightSearchViewModel,
+                        modifier = modifier
+                    )
+                }
+            }
         }
     }
 }
@@ -86,19 +110,25 @@ fun FlightSearchBar(
     modifier: Modifier = Modifier
 ) {
     // Text input field
-    TextField(
-        value = uiState.search ?: "",
-        onValueChange = {
-            flightSearchViewModel.setSearchTerm(it)
-        },
-        modifier = modifier
-            .onFocusChanged { focusState ->
-                flightSearchViewModel.setFocusState(focusState.isFocused)
-                Log.d("FlightSearchBar", "focusState.isFocused: ${focusState.isFocused}")
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        TextField(
+            value = uiState.search ?: "",
+            onValueChange = {
+                flightSearchViewModel.setSearchTerm(it)
             },
-        label = { Text("Enter airport code or name") },
+            modifier = modifier,
+            // round corners
+            shape = MaterialTheme.shapes.small,
 
-    )
+
+            // tried to use the onFocusChange modifier here, but I simply could not get it to work
+            // focusing worked, but it wouldn't unfocus when I clicked outside the text field
+            label = { Text("Enter airport code or name") },
+        )
+    }
 }
 
 

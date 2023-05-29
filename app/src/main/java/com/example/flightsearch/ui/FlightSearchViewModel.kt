@@ -47,7 +47,10 @@ class FlightSearchViewModel(
         if (searchTerm == "") {
             _uiState.value = FlightSearchUiState(search = null)
         } else {
-            _uiState.value = _uiState.value.copy(search = searchTerm)
+            _uiState.value = _uiState.value.copy(
+                search = searchTerm,
+                currentAirport = null
+            )
         }
         // log search term
         Log.d("FlightSearchViewModel", "setSearchTerm: $searchTerm")

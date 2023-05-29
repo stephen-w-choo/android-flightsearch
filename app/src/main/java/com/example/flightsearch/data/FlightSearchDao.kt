@@ -24,9 +24,11 @@ interface FlightSearchDao {
 
     @Query("SELECT * FROM airport " +
             "WHERE name LIKE '%' || :search || '%' " +
-            "OR iata_code = :search ")
+            "OR iata_code = :search " +
+            "ORDER BY passengers DESC")
     fun searchAirports(search: String): Flow<List<Airport>>
 
-    @Query("SELECT * FROM airport")
+    @Query("SELECT * FROM airport " +
+            "ORDER BY passengers DESC")
     fun getAllAirports(): Flow<List<Airport>>
 }
