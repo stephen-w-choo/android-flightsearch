@@ -1,8 +1,10 @@
 package com.example.flightsearch.data
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 
 
 // this is the predefined schema given, although personally I don't think it makes sense
@@ -33,4 +35,18 @@ data class Airport(
     val iataCode: String,
     @ColumnInfo
     val passengers: Int,
+)
+
+data class FavoriteWithAirports(
+    @Embedded val favorite: Favorite,
+    @Relation(
+        parentColumn = "departure_code",
+        entityColumn = "iata_code"
+    )
+    val originAirport: Airport,
+    @Relation(
+        parentColumn = "destination_code",
+        entityColumn = "iata_code"
+    )
+    val destinationAirport: Airport
 )

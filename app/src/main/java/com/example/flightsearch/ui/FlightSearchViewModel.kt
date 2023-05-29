@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.flightsearch.FlightSearchApp
 import com.example.flightsearch.data.Airport
 import com.example.flightsearch.data.Favorite
+import com.example.flightsearch.data.FavoriteWithAirports
 import com.example.flightsearch.data.FlightSearchDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -58,7 +59,7 @@ class FlightSearchViewModel(
         return flightSearchDao.searchAirports(search)
     }
 
-    fun getAllFavorites(): Flow<List<Favorite>> {
+    fun getAllFavorites(): Flow<List<FavoriteWithAirports>> {
         return flightSearchDao.getAllFavorites()
     }
 

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FlightSearchDao {
     @Query("SELECT * FROM favorite")
-    fun getAllFavorites(): Flow<List<Favorite>>
+    fun getAllFavorites(): Flow<List<FavoriteWithAirports>>
 
     @Query("SELECT * FROM favorite " +
             "WHERE departure_code = :departureCode " +
