@@ -1,5 +1,6 @@
 package com.example.flightsearch.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -7,6 +8,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import com.example.flightsearch.ui.screens.AirportRouteListScreen
 // import lazy items
 import com.example.flightsearch.ui.screens.AirportSearchScreen
@@ -47,17 +49,20 @@ fun FlightSearchRootView(
     val airportList = flightSearchViewModel.airportList.collectAsState().value
 
     Column {
-        FlightSearchBar(flightSearchViewModel = flightSearchViewModel)
+        FlightSearchBar(
+            flightSearchViewModel = flightSearchViewModel,
+            uiState = uiState,
+        )
 
-        if (uiState.currentAirport != null) {
-            AirportRouteListScreen(
+        if (uiState.isFocused) {
+            AirportSearchScreen(
                 uiState = uiState,
                 airportList = airportList,
                 flightSearchViewModel = flightSearchViewModel,
                 modifier = modifier
             )
-        } else if (uiState.search != null) {
-            AirportSearchScreen(
+        } else if (uiState.currentAirport != null) {
+            AirportRouteListScreen(
                 uiState = uiState,
                 airportList = airportList,
                 flightSearchViewModel = flightSearchViewModel,
@@ -77,15 +82,20 @@ fun FlightSearchRootView(
 @Composable
 fun FlightSearchBar(
     flightSearchViewModel: FlightSearchViewModel,
+    uiState: FlightSearchUiState,
     modifier: Modifier = Modifier
 ) {
     // Text input field
-    val uiState = flightSearchViewModel.uiState.collectAsState().value
     TextField(
         value = uiState.search ?: "",
         onValueChange = {
             flightSearchViewModel.setSearchTerm(it)
         },
+        modifier = modifier
+            .onFocusChanged { focusState ->
+                flightSearchViewModel.setFocusState(focusState.isFocused)
+                Log.d("FlightSearchBar", "focusState.isFocused: ${focusState.isFocused}")
+            },
         label = { Text("Enter airport code or name") },
 
     )

@@ -38,20 +38,28 @@ class FlightSearchViewModel(
         }
     }
 
+    fun setFocusState(isFocused: Boolean) {
+        _uiState.value = _uiState.value.copy(isFocused = isFocused)
+    }
+
+
     fun setSearchTerm(searchTerm: String) {
-        Log.d("FlightSearchViewModel", "setSearchTerm: $searchTerm")
         if (searchTerm == "") {
             _uiState.value = FlightSearchUiState(search = null)
         } else {
             _uiState.value = _uiState.value.copy(search = searchTerm)
         }
+        // log search term
+        Log.d("FlightSearchViewModel", "setSearchTerm: $searchTerm")
+        // log uiState
+        Log.d("FlightSearchViewModel", "setSearchTerm: ${_uiState.value}")
     }
 
     fun setCurrentAirport(airport: Airport) {
         _uiState.value = _uiState.value.copy(currentAirport = airport)
     }
 
-    fun clearCurrentAirport() {
+    private fun clearCurrentAirport() {
         _uiState.value = _uiState.value.copy(currentAirport = null)
     }
 
@@ -96,4 +104,5 @@ class FlightSearchViewModel(
 data class FlightSearchUiState(
     val search: String? = null,
     val currentAirport: Airport? = null,
+    val isFocused: Boolean = false
 )

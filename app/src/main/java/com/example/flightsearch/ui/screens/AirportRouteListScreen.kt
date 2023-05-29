@@ -29,6 +29,12 @@ fun AirportRouteListScreen(
                 // is in the list of destination airports
 
                 // this will get complicated and unreadable fast, so I'm keeping it simple for now, albeit inefficient
+
+                // skip if the airport is the current airport
+                if (airport.iataCode == uiState.currentAirport.iataCode) {
+                    return@items
+                }
+
                 RouteCard(
                     originAirport = uiState.currentAirport,
                     destinationAirport = airport,
