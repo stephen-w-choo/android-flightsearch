@@ -62,7 +62,7 @@ class FlightSearchViewModel(
         _uiState.value = _uiState.value.copy(currentAirport = airport)
     }
 
-    private fun clearCurrentAirport() {
+    fun clearCurrentAirport() {
         _uiState.value = _uiState.value.copy(currentAirport = null)
     }
 

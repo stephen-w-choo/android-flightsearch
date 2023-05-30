@@ -2,15 +2,19 @@ package com.example.flightsearch.ui
 
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -19,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 import com.example.flightsearch.ui.screens.AirportRouteListScreen
 // import lazy items
 import com.example.flightsearch.ui.screens.AirportSearchScreen
@@ -110,9 +116,9 @@ fun FlightSearchBar(
     modifier: Modifier = Modifier
 ) {
     // Text input field
-    Box(
+    Row(
         modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
+        horizontalArrangement = Arrangement.Center,
     ) {
         TextField(
             value = uiState.search ?: "",
@@ -122,12 +128,21 @@ fun FlightSearchBar(
             modifier = modifier,
             // round corners
             shape = MaterialTheme.shapes.small,
-
-
             // tried to use the onFocusChange modifier here, but I simply could not get it to work
             // focusing worked, but it wouldn't unfocus when I clicked outside the text field
             label = { Text("Enter airport code or name") },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done
+            )
         )
+        TextButton(
+            onClick = {
+                flightSearchViewModel.clearCurrentAirport()
+            },
+            modifier = Modifier.padding(start = 8.dp)
+        ) {
+            Text("Clear")
+        }
     }
 }
 

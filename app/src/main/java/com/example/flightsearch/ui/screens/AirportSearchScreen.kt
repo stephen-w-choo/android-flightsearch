@@ -8,7 +8,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.flightsearch.data.Airport
@@ -16,6 +18,7 @@ import com.example.flightsearch.ui.FlightSearchUiState
 import com.example.flightsearch.ui.FlightSearchViewModel
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AirportSearchScreen(
     uiState: FlightSearchUiState,
@@ -23,6 +26,11 @@ fun AirportSearchScreen(
     flightSearchViewModel: FlightSearchViewModel,
     modifier: Modifier = Modifier,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val hideKeyboard: ()-> Unit = {
+        keyboardController?.hide()
+    }
 
     val searchAirportList = flightSearchViewModel
         .searchAirports(uiState.search ?: "")
@@ -36,7 +44,9 @@ fun AirportSearchScreen(
         items(searchAirportList) { airport ->
             AirportCard(
                 airport = airport,
+                hideKeyboard = hideKeyboard,
                 setCurrentAirport = flightSearchViewModel::setCurrentAirport,
+                modifier = modifier
             )
         }
     }
@@ -45,12 +55,13 @@ fun AirportSearchScreen(
 @Composable
 fun AirportCard(
     airport: Airport,
+    hideKeyboard: () -> Unit,
     setCurrentAirport: (Airport) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
-            .clickable { setCurrentAirport(airport) }
+            .clickable { hideKeyboard(); setCurrentAirport(airport) }
     ) {
         Text(
             text = airport.iataCode.uppercase(),

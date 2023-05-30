@@ -10,12 +10,15 @@ import com.example.flightsearch.data.Airport
 // import lazy items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.flightsearch.ui.FlightSearchUiState
 import com.example.flightsearch.ui.FlightSearchViewModel
 import com.example.flightsearch.ui.screens.sharedComponents.RouteCard
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AirportRouteListScreen(
     uiState: FlightSearchUiState,
@@ -27,6 +30,7 @@ fun AirportRouteListScreen(
         modifier = modifier
             .padding(4.dp)
     ) {
+
         Text(
             text = "Flights from ${uiState.currentAirport?.iataCode?.uppercase() ?: ""}",
             fontWeight = FontWeight.Bold,

@@ -6,7 +6,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.flightsearch.ui.FlightSearchUiState
@@ -14,6 +16,7 @@ import com.example.flightsearch.ui.FlightSearchViewModel
 import com.example.flightsearch.ui.screens.sharedComponents.RouteCard
 
 // 2 screens - favourites, airportSearch, airportFlightList
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AllFavoritesScreen(
     uiState: FlightSearchUiState,
@@ -36,6 +39,7 @@ fun AllFavoritesScreen(
                 destinationAirport = favorite.destinationAirport,
                 flightSearchViewModel = flightSearchViewModel,
                 favoriteExists = favorite.favorite,
+                modifier = modifier
             )
         }
     })
