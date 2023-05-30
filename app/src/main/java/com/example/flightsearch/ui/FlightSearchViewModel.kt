@@ -12,6 +12,7 @@ import com.example.flightsearch.data.Airport
 import com.example.flightsearch.data.Favorite
 import com.example.flightsearch.data.FavoriteWithAirports
 import com.example.flightsearch.data.FlightSearchDao
+import com.example.flightsearch.data.FlightSearchPreferencesDataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class FlightSearchViewModel(
-    private val flightSearchDao: FlightSearchDao
+    private val flightSearchDao: FlightSearchDao,
+    private val flightSearchPreferencesDataStore: FlightSearchPreferencesDataStore
 ): ViewModel() {
     private val _uiState = MutableStateFlow(FlightSearchUiState())
     val uiState: StateFlow<FlightSearchUiState> = _uiState
@@ -97,7 +99,10 @@ class FlightSearchViewModel(
         val factory : ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as FlightSearchApp)
-                FlightSearchViewModel(application.database.flightSearchDao())
+                FlightSearchViewModel(
+                    application.database.flightSearchDao(),
+                    application.preferences
+                )
             }
         }
     }

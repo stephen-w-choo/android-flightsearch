@@ -137,7 +137,7 @@ fun FlightSearchBar(
         )
         TextButton(
             onClick = {
-                flightSearchViewModel.clearCurrentAirport()
+                flightSearchViewModel.setSearchTerm("")
             },
             modifier = Modifier.padding(start = 8.dp)
         ) {
