@@ -17,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class FlightSearchViewModel(
@@ -29,14 +29,24 @@ class FlightSearchViewModel(
 
     // note - putting airportList separate to rest of the uiState as it will never change
     // avoids having to copy the entire list of the airports when the uiState is modified
+
     private val _airportList = MutableStateFlow<List<Airport>>(emptyList())
     val airportList: StateFlow<List<Airport>> = _airportList
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            flightSearchDao.getAllAirports().collect { airports ->
-                _airportList.emit(airports)
-            }
+            val airports = flightSearchDao.getAllAirports().first()
+            _airportList.emit(airports)
+
+            val lastSearchQuery = flightSearchPreferencesDataStore.lastSearchQuery.first()
+
+            _uiState.emit(
+                if (lastSearchQuery == "") {
+                    _uiState.value.copy(search = null)
+                } else {
+                    _uiState.value.copy(search = lastSearchQuery)
+                }
+            )
         }
     }
 
@@ -45,20 +55,26 @@ class FlightSearchViewModel(
     }
 
 
-    fun setSearchTerm(searchTerm: String) {
+    fun setSearchQuery(searchTerm: String) {
+        setPreferencesSearchQuery(searchTerm)
+
         if (searchTerm == "") {
-            _uiState.value = FlightSearchUiState(search = null)
+            setUiSearchQuery(null)
         } else {
-            _uiState.value = _uiState.value.copy(
-                search = searchTerm,
-                currentAirport = null
-            )
+            setUiSearchQuery(searchTerm)
         }
-        // log search term
-        Log.d("FlightSearchViewModel", "setSearchTerm: $searchTerm")
-        // log uiState
-        Log.d("FlightSearchViewModel", "setSearchTerm: ${_uiState.value}")
     }
+
+    fun setUiSearchQuery(searchQuery: String?) {
+        _uiState.value = FlightSearchUiState(search = searchQuery, currentAirport = null)
+    }
+
+    fun setPreferencesSearchQuery(searchQuery: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            flightSearchPreferencesDataStore.saveLastSearchQuery(searchQuery)
+        }
+    }
+
 
     fun setCurrentAirport(airport: Airport) {
         _uiState.value = _uiState.value.copy(currentAirport = airport)

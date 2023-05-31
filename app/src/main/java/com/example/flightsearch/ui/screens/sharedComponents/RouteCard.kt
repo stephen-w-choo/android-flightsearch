@@ -93,54 +93,54 @@ fun RouteCard(
     }
 }
 
-class FakeFlightSearchDao: FlightSearchDao {
-    override fun getAllFavorites(): Flow<List<FavoriteWithAirports>> {
-        return flowOf(listOf()) // Returns an empty list
-    }
-
-    override fun favoriteExists(departureCode: String, destinationCode: String): Flow<Favorite?> {
-        return flowOf(null) // Returns null
-    }
-
-    override fun addFavorite(newFavorite: Favorite) {
-        // Do nothing
-    }
-
-    override fun deleteFavorite(favorite: Favorite) {
-        // Do nothing
-    }
-
-    override fun searchAirports(search: String): Flow<List<Airport>> {
-        return flowOf(listOf()) // Returns an empty list
-    }
-
-    override fun getAllAirports(): Flow<List<Airport>> {
-        return flowOf(listOf()) // Returns an empty list
-    }
-
-    // Override other methods here and provide some dummy implementations
-}
-
-@Preview
-@Composable
-fun RouteCardPreview() {
-    RouteCard(
-        originAirport = Airport(
-            id = 0,
-            name = "London Heathrow",
-            iataCode = "LHR",
-            passengers = 500,
-        ),
-        destinationAirport = Airport(
-            id = 1,
-            name = "New York",
-            iataCode = "JFK",
-            passengers = 500,
-        ),
-        flightSearchViewModel = FlightSearchViewModel(flightSearchDao = FakeFlightSearchDao()),
-        favoriteExists = Favorite(
-            departureCode = "LHR",
-            destinationCode = "JFK",
-        ),
-    )
-}
+//class FakeFlightSearchDao: FlightSearchDao {
+//    override fun getAllFavorites(): Flow<List<FavoriteWithAirports>> {
+//        return flowOf(listOf()) // Returns an empty list
+//    }
+//
+//    override fun favoriteExists(departureCode: String, destinationCode: String): Flow<Favorite?> {
+//        return flowOf(null) // Returns null
+//    }
+//
+//    override fun addFavorite(newFavorite: Favorite) {
+//        // Do nothing
+//    }
+//
+//    override fun deleteFavorite(favorite: Favorite) {
+//        // Do nothing
+//    }
+//
+//    override fun searchAirports(search: String): Flow<List<Airport>> {
+//        return flowOf(listOf()) // Returns an empty list
+//    }
+//
+//    override fun getAllAirports(): Flow<List<Airport>> {
+//        return flowOf(listOf()) // Returns an empty list
+//    }
+//
+//    // Override other methods here and provide some dummy implementations
+//}
+//
+//@Preview
+//@Composable
+//fun RouteCardPreview() {
+//    RouteCard(
+//        originAirport = Airport(
+//            id = 0,
+//            name = "London Heathrow",
+//            iataCode = "LHR",
+//            passengers = 500,
+//        ),
+//        destinationAirport = Airport(
+//            id = 1,
+//            name = "New York",
+//            iataCode = "JFK",
+//            passengers = 500,
+//        ),
+//        flightSearchViewModel = FlightSearchViewModel(flightSearchDao = FakeFlightSearchDao()),
+//        favoriteExists = Favorite(
+//            departureCode = "LHR",
+//            destinationCode = "JFK",
+//        ),
+//    )
+//}

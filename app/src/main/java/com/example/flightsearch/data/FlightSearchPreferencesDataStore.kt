@@ -22,6 +22,8 @@ class FlightSearchPreferencesDataStore(
     }
 
     suspend fun saveLastSearchQuery(lastSearchQuery: String) {
+        Log.d(TAG, "saveLastSearchQuery: $lastSearchQuery")
+
         dataStore.edit { preferences ->
             preferences[LAST_SEARCH_QUERY] = lastSearchQuery
         }
